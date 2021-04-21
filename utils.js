@@ -393,6 +393,27 @@ const fetchProject = (req, res) => {
     })
 }
 
+const getAllProjects = (host, req, res) => {
+    Project.find({}, (err, data) => {
+        if(err){
+            res.json({
+                "message": err
+            })
+        } else {
+            let projects = [];
+            data.forEach(element => {
+                let projectImageUrl = "http://" + host + "/projectImage/" + element.image;
+                element['image'] = projectImageUrl;
+                projects.push(element);
+            });
+            res.json({
+                "message": "Fetched all projects successfully",
+                "data": projects
+            })
+        }
+    })
+}
+
 exports.createNewUser = createNewUser;
 exports.getAllUsers = getUser;
 exports.checkIfUsernameExists = checkIfUsernameExists;
@@ -404,3 +425,4 @@ exports.fetchProfileImage = fetchProfileImage;
 exports.createNewProject = createNewProject;
 exports.fetchProjectImage = fetchProjectImage;
 exports.fetchProject = fetchProject;
+exports.getAllProjects = getAllProjects;

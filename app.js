@@ -71,6 +71,10 @@ app.post("/project/new", (req, res) => {
   utils.createNewProject(req, res);
 });
 
+app.get("/projects", async (req, res) => {
+  utils.getAllProjects(req.headers.host, req, res);
+})
+
 app.get("/project/:id", async (req, res) => {
   utils.fetchProject(req, res);
 });
