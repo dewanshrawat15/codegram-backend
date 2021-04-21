@@ -36,7 +36,7 @@ app.post("/users/create", async (req, res) => {
   const bodyData = req.body;
   let boolIfUserExists = await utils.checkIfUsernameExists(bodyData.username);
   if(boolIfUserExists){
-    utils.createNewUser(req, res);
+    utils.createNewUser(req.headers.host, req, res);
   } else {
     res.json({
       "message": "Username with the same user already exists"

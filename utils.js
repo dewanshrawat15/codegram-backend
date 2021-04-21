@@ -51,7 +51,7 @@ const validatePassword = (password, salt, userHash) => {
     return userHash === hash;
 }
 
-const createNewUser = (req, res) => {
+const createNewUser = (host, req, res) => {
     const storage = multer.memoryStorage();
     const upload = multer({
         storage: storage,
@@ -107,6 +107,9 @@ const createNewUser = (req, res) => {
                     });
                 }
                 else{
+                    const firstName = data.firstName;
+                    const lastName = data.lastName;
+                    const profileImageUrl = "http://" + host + "/image/" + data.profileImage;
                     let authToken = jwt.sign(username, process.env.TOKEN_SECRET);
                     let newAuthToken = new AuthToken({
                         username: username,
@@ -119,7 +122,14 @@ const createNewUser = (req, res) => {
                             });
                         } else {
                             res.json({
-                                "message": "New user created"
+                                "message": "New user created",
+                                "data": {
+                                    "authToken": authToken,
+                                    "username": username,
+                                    "firstName": firstName,
+                                    "lastName": lastName,
+                                    "profileImageUrl": profileImageUrl
+                                }
                             });
                         }
                     });
