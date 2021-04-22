@@ -42,11 +42,19 @@ let ProjectSchema = new Schema({
     date: {type: String, required: true},
     user: {type: String, required: true},
     likes: {type: Number, default: 0}
-})
+});
+
+let CommentSchema = new Schema({
+    comment: {type: String, required: true},
+    projectID: {type: String, required: true},
+    username: {type: String, required: true},
+    date: {type: String, default: new Date()}
+});
 
 let User = mongoose.model("User", UserSchema);
 let AuthToken = mongoose.model("Auth Token", AuthTokenSchema);
 let Project = mongoose.model("Project", ProjectSchema);
+let Comment = mongoose.model("Comment", CommentSchema);
 
 const validatePassword = (password, salt, userHash) => {
     let hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
@@ -446,6 +454,65 @@ const updateProjectNumberOfLikes = (req, res, _id) => {
     })
 }
 
+const addNewComment = (req, res) => {
+    const authToken = req.headers.authorization;
+    AuthToken.findOne({ authToken: authToken }, (err, data) => {
+        if(err){
+            res.status(200).json({
+                "message": err
+            })
+        } else {
+            const commentData = req.body;
+            const projectID = commentData.projectID;
+            const commentString = commentData.comment;
+            const newComment = Comment({
+                comment: commentString,
+                projectID: projectID,
+                username: data.username,
+                date: new Date()
+            });
+            newComment.save((err, data) => {
+                if(err){
+                    res.status(400).json({
+                        "message": err
+                    })
+                } else {
+                    res.status(200).json({
+                        "message": data
+                    })
+                }
+            })
+
+        }
+    })
+}
+
+const fetchAllCommentsOnProject = (req, res, projectID) => {
+    const authToken = req.headers.authorization;
+    AuthToken.findOne({ authToken: authToken }, (err, data) => {
+        if(err){
+            res.status(200).json({
+                "message": err
+            })
+        } else {
+            const params = {
+                projectID: projectID
+            };
+            Comment.find(params, (err, data) => {
+                if(err){
+                    res.status(400).json({
+                        "message": err
+                    })
+                } else {
+                    res.status(200).json({
+                        "message": data
+                    })
+                }
+            })
+        }
+    })
+}
+
 exports.createNewUser = createNewUser;
 exports.getAllUsers = getUser;
 exports.checkIfUsernameExists = checkIfUsernameExists;
@@ -459,3 +526,5 @@ exports.fetchProjectImage = fetchProjectImage;
 exports.fetchProject = fetchProject;
 exports.getAllProjects = getAllProjects;
 exports.updateProjectNumberOfLikes = updateProjectNumberOfLikes;
+exports.addNewComment = addNewComment;
+exports.fetchAllCommentsOnProject = fetchAllCommentsOnProject;

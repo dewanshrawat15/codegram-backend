@@ -98,6 +98,15 @@ app.get("/project/:id/like", async (req, res) => {
   const projectId = req.params.id;
   const auth = req.headers.authorization;
   utils.updateProjectNumberOfLikes(req, res, projectId);
+});
+
+app.post("/comment/add", async (req, res) => {
+  utils.addNewComment(req, res);
+});
+
+app.get("/project/comments/:id", async (req, res) => {
+  const projectID = req.params.id;
+  utils.fetchAllCommentsOnProject(req, res, projectID);
 })
 
 module.exports = app;
