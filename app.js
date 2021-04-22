@@ -6,8 +6,11 @@ const cors = require("cors");
 let app = express();
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
+
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb', extended: false}));
 
 app.use(function middleware(req, res, next){
   var string = req.method + " " + req.path + " - " + req.ip;

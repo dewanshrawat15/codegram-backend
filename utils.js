@@ -388,6 +388,7 @@ const fetchProject = (req, res) => {
                     details: data.details,
                     date: data.date,
                     username: data.user,
+                    likes: data.likes,
                     projectImage: "http://" + host + "/projectImage/" + data.image
                 }
             })
@@ -430,8 +431,16 @@ const updateProjectNumberOfLikes = (req, res, _id) => {
                 "error": err
             })
         } else {
-            res.json({
-                "data": data
+            Project.findOne(params, (err, data) => {
+                if(err){
+                    res.status(400).json({
+                        "error": err
+                    })
+                } else {
+                    res.json({
+                        "data": data
+                    })
+                }
             })
         }
     })
