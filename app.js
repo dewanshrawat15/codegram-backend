@@ -72,7 +72,14 @@ app.post("/project/new", (req, res) => {
 });
 
 app.get("/projects", async (req, res) => {
-  utils.getAllProjects(req.headers.host, req, res);
+  const authToken = req.headers.authorization;
+  if(authToken){
+    utils.getAllProjects(req.headers.host, req, res);
+  } else {
+    res.status(400).json({
+      "message": "Unauthenticated user request"
+    })
+  }
 })
 
 app.get("/project/:id", async (req, res) => {
@@ -83,5 +90,11 @@ app.get("/projectImage/:id", async (req, res) => {
   const projectImageId = req.params.id;
   utils.fetchProjectImage(req, res, projectImageId);
 });
+
+app.get("/project/:id/like", async (req, res) => {
+  const projectId = req.params.id;
+  const auth = req.headers.authorization;
+  utils.updateProjectNumberOfLikes(req, res, projectId);
+})
 
 module.exports = app;

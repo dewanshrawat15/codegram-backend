@@ -12,7 +12,8 @@ const conn = mongoose.connect(
     process.env.MONGO_URI,
     {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      useFindAndModify: false
     }
 );
 
@@ -39,7 +40,8 @@ let ProjectSchema = new Schema({
     details: {type: String, required: true},
     image: {type: String, required: true},
     date: {type: String, required: true},
-    user: {type: String, required: true}
+    user: {type: String, required: true},
+    likes: {type: Number, default: 0}
 })
 
 let User = mongoose.model("User", UserSchema);
@@ -414,6 +416,27 @@ const getAllProjects = (host, req, res) => {
     })
 }
 
+const updateProjectNumberOfLikes = (req, res, _id) => {
+	const params = {
+		_id: _id
+	}
+    Project.findOneAndUpdate(params, {
+        "$inc": {
+            "likes": 1
+        }
+    }, (err, data) => {
+        if(err){
+            res.status(400).json({
+                "error": err
+            })
+        } else {
+            res.json({
+                "data": data
+            })
+        }
+    })
+}
+
 exports.createNewUser = createNewUser;
 exports.getAllUsers = getUser;
 exports.checkIfUsernameExists = checkIfUsernameExists;
@@ -426,3 +449,4 @@ exports.createNewProject = createNewProject;
 exports.fetchProjectImage = fetchProjectImage;
 exports.fetchProject = fetchProject;
 exports.getAllProjects = getAllProjects;
+exports.updateProjectNumberOfLikes = updateProjectNumberOfLikes;
